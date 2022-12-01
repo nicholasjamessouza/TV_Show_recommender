@@ -11,7 +11,7 @@ from st_aggrid.shared import JsCode
 
 input_df = pd.read_csv('./pop_df.csv')
 show_list = input_df['title_english'].to_list()
-showlist.insert(0,'')
+show_list.insert(0,'')
 
 def _max_width_():
     max_width_str = f"max-width: 1800px;"

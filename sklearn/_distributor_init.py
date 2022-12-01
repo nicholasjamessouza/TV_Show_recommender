@@ -11,7 +11,7 @@ that build the wheel.
 
 import os
 import os.path as op
-import ctypes
+from ctypes import WinDLL
 
 
 if os.name == "nt":
@@ -19,5 +19,5 @@ if os.name == "nt":
     libs_path = op.join(op.dirname(__file__), ".libs")
     vcomp140_dll_filename = op.join(libs_path, "vcomp140.dll")
     vcruntime140_dll_filename = op.join(libs_path, "vcruntime140.dll")
-    ctypes.WinDLL(op.abspath(vcomp140_dll_filename))
-    ctypes.WinDLL(op.abspath(vcruntime140_dll_filename))
+    WinDLL(op.abspath(vcomp140_dll_filename))
+    WinDLL(op.abspath(vcruntime140_dll_filename))

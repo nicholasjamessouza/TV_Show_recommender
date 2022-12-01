@@ -1,2 +1,0 @@
-jikanpy==4.3.2
-sklearn==0.0

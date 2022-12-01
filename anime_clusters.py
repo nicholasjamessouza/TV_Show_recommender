@@ -148,7 +148,7 @@ def get_cluster(fav_anime, n_clusters=38):
     studios = pd.DataFrame(mlb.fit_transform(pop_df['studios'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
     themes = pd.DataFrame(mlb.fit_transform(pop_df['themes'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
     demographics = pd.DataFrame(mlb.fit_transform(pop_df['demographics'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
-    synopsis = pd.DataFrame(mlb.fit_transform(pop_df['synopsis'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
+    #synopsis = pd.DataFrame(mlb.fit_transform(pop_df['synopsis'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
     dummy_df = pd.concat([ml_df,genres,studios,themes,demographics,synopsis], axis=1).drop(['score','popularity','mal_id','title_english','genres','studios','themes','demographics','synopsis'], axis=1).fillna(0)
 
     # Normalizing dummy_df to be between 0 & 1

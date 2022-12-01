@@ -41,7 +41,7 @@ with c30:
 
     name = st.selectbox("Pick your favorite anime:",show_list)
 
-    if name is not None:
+    if name is not '':
         df = get_cluster(name)
 
     else:

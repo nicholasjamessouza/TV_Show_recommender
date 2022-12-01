@@ -10,6 +10,7 @@ from st_aggrid.shared import JsCode
 ###################################
 
 input_df = pd.read_csv('./pop_df.csv')
+input_df = input_df.sort_values(by='popularity')
 show_list = input_df['title_english'].to_list()
 show_list.insert(0,'')
 
@@ -55,7 +56,7 @@ with c30:
 
 from st_aggrid import GridUpdateMode, DataReturnMode
 
-gb = GridOptionsBuilder.from_dataframe(df)
+gb = GridOptionsBuilder.from_dataframe(df['title_english'])
 # enables pivoting on all columns, however i'd need to change ag grid to allow export of pivoted/grouped data, however it select/filters groups
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
 gb.configure_selection(selection_mode="multiple", use_checkbox=True)

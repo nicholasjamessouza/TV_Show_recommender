@@ -11,6 +11,10 @@ import os
 import yaml
 import ast
 import difflib
+import requests
+from bs4 import BeautifulSoup
+import re
+import wikipedia
 
 jikan = Jikan()
 columns = ['type','mal_id','title_english','popularity','rating','genres','studios','themes','demographics','synopsis']
@@ -48,6 +52,17 @@ def nlp(text, num_of_words=10):
         words = [cv.get_feature_names_out()[i] for i in topic.argsort()][-num_of_words:]
     return words
 
+def wiki(title):
+    try:
+        title = title + ' TV Series'
+        page = str(wikipedia.page(title).content)
+    except:
+        page = str(wikipedia.page(title).content)
+    plotStr = page.split('Plot ==')[1].split('\n\n\n== ')[0]
+    plotStr = re.sub('\\n.*?',"",plotStr)
+    plotStr = re.sub("\\.*?","",plotStr)
+    return plotStr
+
 def nlp(text, num_of_words=10):
     text = text.values[0]
     cv = CountVectorizer(stop_words='english')
@@ -66,18 +81,18 @@ def nlp(text, num_of_words=10):
         words = [cv.get_feature_names_out()[i] for i in topic.argsort()][-num_of_words:]
     return words
 
-def anime_search(search,df=None):
+def anime_search(search,df):
     if df.empty:
         results = jikan.search('anime', search)
         df = pd.DataFrame(results['data'])
     else:
         search = search.lower()
-        df[df['title'].str.contains(search)]
-    temp_df = df[columns].dropna(),
+        df['title_english'] = df['title_english'].str.lower()
+        df = df[df['title_english'].str.contains(search, na=False)]
+    temp_df = df[columns].dropna()
     temp_df = temp_df[temp_df['type'] == 'TV']
     temp_df.drop('type',axis=1,inplace=True)
     temp_df.reset_index(drop=True)
-
     temp_df['genres'] = cell_splitter(temp_df['genres'])
     temp_df['studios'] = cell_splitter(temp_df['studios'])
     temp_df['themes'] = cell_splitter(temp_df['themes'])
@@ -106,8 +121,16 @@ def top_anime(pages=80):
     pop_df['studios'] = cell_splitter(pop_df['studios'])
     pop_df['themes'] = cell_splitter(pop_df['themes'])
     pop_df['demographics'] = cell_splitter(pop_df['demographics'])
-    for j, synopsis in enumerate(pop_df['synopsis']):
-        pop_df['synopsis'].iloc[j] = nlp(pd.Series(synopsis))
+    for j, synopses in enumerate(pop_df['synopsis']):
+        try:
+            synopsis = wiki(pop_df['title_english'].iloc[j])
+        except:
+            synopsis = synopses
+        try:
+            pop_df['synopsis'].iloc[j] = nlp(pd.Series(synopsis))
+        except:
+            pop_df['synopsis'].iloc[j] = []
+        time.sleep(1)
 
     return pop_df
 
@@ -144,12 +167,21 @@ def get_cluster(fav_anime, n_clusters=38):
     # Convert pop_df into a dummy dataframe with only 0s or 1s values
     mlb = MultiLabelBinarizer()
     ml_df = pd.get_dummies(pop_df,columns=['rating'])
+<<<<<<< HEAD
     genres = pd.DataFrame(mlb.fit_transform(pop_df['genres'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
     studios = pd.DataFrame(mlb.fit_transform(pop_df['studios'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
     themes = pd.DataFrame(mlb.fit_transform(pop_df['themes'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
     demographics = pd.DataFrame(mlb.fit_transform(pop_df['demographics'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
     #synopsis = pd.DataFrame(mlb.fit_transform(pop_df['synopsis'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
     dummy_df = pd.concat([ml_df,genres,studios,themes,demographics], axis=1).drop(['score','popularity','mal_id','title_english','genres','studios','themes','demographics','synopsis'], axis=1).fillna(0)
+=======
+    genres = pd.DataFrame(mlb.fit_transform(pop_df['genres'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
+    studios = pd.DataFrame(mlb.fit_transform(pop_df['studios'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
+    themes = pd.DataFrame(mlb.fit_transform(pop_df['themes'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
+    demographics = pd.DataFrame(mlb.fit_transform(pop_df['demographics'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
+    synopsis = pd.DataFrame(mlb.fit_transform(pop_df['synopsis'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
+    dummy_df = pd.concat([ml_df,genres,studios,themes,demographics,synopsis], axis=1).drop(['popularity','mal_id','title_english','genres','studios','themes','demographics','synopsis'], axis=1).fillna(0)
+>>>>>>> streamlit
 
     # Normalizing dummy_df to be between 0 & 1
     normalizer = MinMaxScaler()

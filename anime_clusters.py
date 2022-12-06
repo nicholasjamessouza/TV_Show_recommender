@@ -167,21 +167,12 @@ def get_cluster(fav_anime, n_clusters=38):
     # Convert pop_df into a dummy dataframe with only 0s or 1s values
     mlb = MultiLabelBinarizer()
     ml_df = pd.get_dummies(pop_df,columns=['rating'])
-<<<<<<< HEAD
-    genres = pd.DataFrame(mlb.fit_transform(pop_df['genres'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
-    studios = pd.DataFrame(mlb.fit_transform(pop_df['studios'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
-    themes = pd.DataFrame(mlb.fit_transform(pop_df['themes'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
-    demographics = pd.DataFrame(mlb.fit_transform(pop_df['demographics'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
-    #synopsis = pd.DataFrame(mlb.fit_transform(pop_df['synopsis'].apply(lambda x: ast.literal_eval(x))),columns=mlb.classes_)
-    dummy_df = pd.concat([ml_df,genres,studios,themes,demographics], axis=1).drop(['score','popularity','mal_id','title_english','genres','studios','themes','demographics','synopsis'], axis=1).fillna(0)
-=======
     genres = pd.DataFrame(mlb.fit_transform(pop_df['genres'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
     studios = pd.DataFrame(mlb.fit_transform(pop_df['studios'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
     themes = pd.DataFrame(mlb.fit_transform(pop_df['themes'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
     demographics = pd.DataFrame(mlb.fit_transform(pop_df['demographics'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
     synopsis = pd.DataFrame(mlb.fit_transform(pop_df['synopsis'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
     dummy_df = pd.concat([ml_df,genres,studios,themes,demographics,synopsis], axis=1).drop(['popularity','mal_id','title_english','genres','studios','themes','demographics','synopsis'], axis=1).fillna(0)
->>>>>>> streamlit
 
     # Normalizing dummy_df to be between 0 & 1
     normalizer = MinMaxScaler()

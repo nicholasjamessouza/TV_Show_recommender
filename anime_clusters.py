@@ -3,7 +3,7 @@ from jikanpy import Jikan
 import time
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.decomposition import LatentDirichletAllocation
+from sklearn.decomposition import LatentDirichletAllocation, PCA
 from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.cluster import AgglomerativeClustering
 import numpy as np
@@ -134,58 +134,84 @@ def top_anime(pages=80):
 
     return pop_df
 
-def get_cluster(fav_anime, n_clusters=38):
-    # fav_df = pd.DataFrame(columns = columns)
-    # fav_df.drop('type',axis=1,inplace=True)
-    # fav_anime = ['fullmetal alchemist: brotherhood','dragon ball z','steins;gate','psycho-pass','my hero academia','code geass: lelouch of rebellion','rurouni kenshin','attack on titan','puella magi madoka magica','one punch man']
-    # search_df = None
-    # sleep_timer = 1
-    # if os.path.exists(file):
-    #     search_df = pd.read_csv(file,index_col=0)
-    #     sleep_timer = 0
-    # for fav in fav_anime:
-    #     df = anime_search(fav, search_df)
-    #     df.sort_values('popularity')
-    #     temp_df = df.iloc[[0]]
-    #     fav_df = pd.concat([fav_df,temp_df], ignore_index=True)
-    #     time.sleep(sleep_timer)
+def get_cluster(fav_anime, sort='score'):
 
-    # Get df of popular anime & corresponding info
-    pop_df_file = './pop_df.csv'
-    if os.path.exists(pop_df_file):
-        pop_df = pd.read_csv(pop_df_file,index_col=0)
+    final_df_file = './final_df.csv'
+    if os.path.exists(final_df_file):
+        final_df = pd.read_csv(final_df_file,index_col=0)
     else:
-        pop_df = top_anime()
-        pop_df = pop_df.drop_duplicates(subset=['title_english']).reset_index(drop=True)
-        pop_df.to_csv(pop_df_file)
+        # Get df of popular anime & corresponding info
+        pop_df_file = './pop_df.csv'
+        if os.path.exists(pop_df_file):
+            pop_df = pd.read_csv(pop_df_file,index_col=0)
+        else:
+            pop_df = top_anime()
+            pop_df = pop_df.drop_duplicates(subset=['title_english']).reset_index(drop=True)
+            pop_df.to_csv(pop_df_file)
 
-    # indices = []
-    # for id in fav_df['mal_id']:
-    #     index = pop_df[pop_df['mal_id']==id].index[0]
-    #     indices.append(index)
+        # Convert pop_df into a dummy dataframe with only 0s or 1s values
+        mlb = MultiLabelBinarizer()
+        ml_df = pd.get_dummies(pop_df,columns=['rating'])
+        genres = pd.DataFrame(mlb.fit_transform(pop_df['genres'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
+        studios = pd.DataFrame(mlb.fit_transform(pop_df['studios'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
+        themes = pd.DataFrame(mlb.fit_transform(pop_df['themes'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
+        demographics = pd.DataFrame(mlb.fit_transform(pop_df['demographics'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
+        synopsis = pd.DataFrame(mlb.fit_transform(pop_df['synopsis'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
+        dummy_df = pd.concat([ml_df,genres,studios,themes,demographics,synopsis], axis=1).drop(['popularity','mal_id','title_english','genres','studios','themes','demographics','synopsis'], axis=1).fillna(0)
 
-    # Convert pop_df into a dummy dataframe with only 0s or 1s values
-    mlb = MultiLabelBinarizer()
-    ml_df = pd.get_dummies(pop_df,columns=['rating'])
-    genres = pd.DataFrame(mlb.fit_transform(pop_df['genres'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
-    studios = pd.DataFrame(mlb.fit_transform(pop_df['studios'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
-    themes = pd.DataFrame(mlb.fit_transform(pop_df['themes'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
-    demographics = pd.DataFrame(mlb.fit_transform(pop_df['demographics'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
-    synopsis = pd.DataFrame(mlb.fit_transform(pop_df['synopsis'].apply(lambda x: ast.literal_eval(x) if ',' in x else [x])),columns=mlb.classes_)
-    dummy_df = pd.concat([ml_df,genres,studios,themes,demographics,synopsis], axis=1).drop(['popularity','mal_id','title_english','genres','studios','themes','demographics','synopsis'], axis=1).fillna(0)
+        # Normalizing dummy_df to be between 0 & 1
+        normalizer = MinMaxScaler()
+        normal = normalizer.fit_transform(dummy_df)
+        normal_df = pd.DataFrame(data=normal,columns=dummy_df.columns)
 
-    # Normalizing dummy_df to be between 0 & 1
-    normalizer = MinMaxScaler()
-    normal = normalizer.fit_transform(dummy_df)
-    normal_df = pd.DataFrame(data=normal,columns=dummy_df.columns)
+        # Clustering shows together based on number of clusters and categories
+        model = AgglomerativeClustering(n_clusters=38, compute_distances=True)
+        y = model.fit_predict(normal_df)
 
-    # Clustering shows together based on number of clusters and categories
-    model = AgglomerativeClustering(n_clusters=n_clusters, compute_distances=True)
-    y = model.fit_predict(normal_df)
+        # Converting high dimension dataframe into 3dimensions for visualization and proximity
+        plotX = normal_df
+        plotX['Cluster'] = y
+        plotX.columns = normal_df.columns
+        pca_3d = PCA(n_components=3)
+        PCs_3d = pd.DataFrame(pca_3d.fit_transform(plotX.drop(["Cluster"], axis=1)))
+        PCs_3d.columns = ["PC1_3d", "PC2_3d", "PC3_3d"]
+        plotX = pd.concat([plotX,PCs_3d], axis=1, join='inner')
 
-    # Combining clusters with pop_df to select only related shows
-    pop_df['cluster'] = y
-    # display(pop_df.iloc[indices])
-    cluster = pop_df[pop_df['title_english']==fav_anime]['cluster'].values[0]
-    cluster_df = pop_df[pop_df['cluster']==cluster]
+        # Finding nearest neighbors based on distance in 3D space
+        neighbors = []
+        for i in range(len(PCs_3d)):
+            PCs = PCs_3d.drop(i)
+            neighbor = []
+            p1 = np.array([PCs_3d['PC1_3d'].iloc[i], PCs_3d['PC2_3d'].iloc[i], PCs_3d['PC3_3d'].iloc[i]])
+            for j in range(len(PCs)):
+
+                p2 = np.array([PCs['PC1_3d'].iloc[j], PCs['PC2_3d'].iloc[j], PCs['PC3_3d'].iloc[j]])
+                squared_dist = np.sum((p1-p2)**2, axis=0)
+                dist = np.sqrt(squared_dist)
+                neighbor.append(dist)
+
+            current_cluster = plotX['Cluster'].iloc[i]
+            current_cluster_list = plotX[plotX['Cluster']==current_cluster].drop(i).index.to_list()
+            neighbor_df = pd.Series(neighbor)
+            neighbor_df.index = PCs.index
+            neighbor_df = neighbor_df[current_cluster_list]
+            neighbor_df = neighbor_df.sort_values()
+            neighbor_list = neighbor_df.index.to_list()
+            neighbors.append(neighbor_list)
+        pop_df['neighbor'] = neighbors
+
+        # Combining clusters with pop_df to select only related shows
+        pop_df['cluster'] = y
+        final_df = pop_df
+
+    if sort == 'score':
+        cluster = final_df[final_df['title_english']==fav_anime]['cluster'].values[0]
+        cluster_df = final_df[final_df['cluster']==cluster]
+    elif sort == 'popularity':
+        cluster = final_df[final_df['title_english']==fav_anime]['cluster'].values[0]
+        cluster_df = final_df[final_df['cluster']==cluster].sort_values('popularity',axis=1)
+    elif sort == 'neighbor':
+        cluster = final_df[final_df['title_english']==fav_anime]['neighbor'].values[0]
+        cluster_df = final_df.iloc[final_df['neighbor'].iloc[cluster]]
+
     return cluster_df

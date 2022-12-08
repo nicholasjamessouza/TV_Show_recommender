@@ -134,7 +134,7 @@ def top_anime(pages=80):
 
     return pop_df
 
-def get_cluster(fav_anime, sort='score'):
+def get_cluster(fav_anime, sort='Closest Match'):
 
     final_df_file = './final_df.csv'
     if os.path.exists(final_df_file):
@@ -203,15 +203,15 @@ def get_cluster(fav_anime, sort='score'):
         # Combining clusters with pop_df to select only related shows
         pop_df['cluster'] = y
         final_df = pop_df
-
-    if sort == 'score':
+    img_url = final_df[final_df['title_english']==fav_anime]['images_url'].values[0]
+    if sort == 'Score':
         cluster = final_df[final_df['title_english']==fav_anime]['cluster'].values[0]
         cluster_df = final_df[final_df['cluster']==cluster]
-    elif sort == 'popularity':
+    elif sort == 'Popularity':
         cluster = final_df[final_df['title_english']==fav_anime]['cluster'].values[0]
         cluster_df = final_df[final_df['cluster']==cluster].sort_values(by='popularity')
-    elif sort == 'neighbor':
+    elif sort == 'Closest Match':
         cluster = final_df[final_df['title_english']==fav_anime]['neighbor'].values[0]
         cluster = ast.literal_eval(cluster)
         cluster_df = final_df.iloc[cluster]
-    return cluster_df
+    return cluster_df, img_url

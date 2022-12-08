@@ -41,10 +41,10 @@ c29, c30, c31 = st.columns([1, 6, 1])
 with c30:
 
     name = st.selectbox("Pick your favorite anime:",show_list)
-    radio = st.radio("Sort by:",('score','popularity','neighbor'))
+    radio = st.radio("Sort by:",('Score','Popularity','Closest Match'))
     if name != '':
-        df = get_cluster(name,radio)
-
+        df, img_url = get_cluster(name,radio)
+        st.image(img_url,width=100)
     else:
         st.info(
             f"""

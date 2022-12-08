@@ -210,11 +210,15 @@ def get_cluster(fav_anime, sort='Closest Match'):
     final_df = final_df.merge(img_url, on='mal_id').drop_duplicates(subset=['mal_id']).reset_index(drop=True)
     img_url = final_df[final_df['title_english']==fav_anime]['images_url'].values[0]
     if sort == 'Score':
+        idx = final_df[final_df['title_english']==fav_anime].index
         cluster = final_df[final_df['title_english']==fav_anime]['cluster'].values[0]
         cluster_df = final_df[final_df['cluster']==cluster]
+        cluster_df.drop(idx, inplace=True)
     elif sort == 'Popularity':
+        idx = final_df[final_df['title_english']==fav_anime].index
         cluster = final_df[final_df['title_english']==fav_anime]['cluster'].values[0]
         cluster_df = final_df[final_df['cluster']==cluster].sort_values(by='popularity')
+        cluster_df.drop(idx, inplace=True)
     elif sort == 'Closest Match':
         cluster = final_df[final_df['title_english']==fav_anime]['neighbor'].values[0]
         cluster = ast.literal_eval(cluster)

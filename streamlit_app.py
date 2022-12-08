@@ -41,9 +41,9 @@ c29, c30, c31 = st.columns([1, 6, 1])
 with c30:
 
     name = st.selectbox("Pick your favorite anime:",show_list)
-
+    radio = st.radio("Sort by:",('score','popularity','neighbor'))
     if name is not '':
-        df = get_cluster(name)
+        df = get_cluster(name,radio)
 
     else:
         st.info(

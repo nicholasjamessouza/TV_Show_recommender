@@ -44,8 +44,8 @@ with c30:
     radio = st.radio("Sort by:",('Score','Popularity','Closest Match'))
     if name != '':
         df, img_url = get_cluster(name,radio)
-        with c31:
-            st.image(img_url,width=400)
+        with c29:
+            st.image(img_url,width=200)
     else:
         st.info(
             f"""

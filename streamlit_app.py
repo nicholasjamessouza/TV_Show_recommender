@@ -42,7 +42,7 @@ with c30:
 
     name = st.selectbox("Pick your favorite anime:",show_list)
     radio = st.radio("Sort by:",('score','popularity','neighbor'))
-    if name is not '':
+    if name != '':
         df = get_cluster(name,radio)
 
     else:

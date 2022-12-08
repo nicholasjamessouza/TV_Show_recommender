@@ -212,6 +212,6 @@ def get_cluster(fav_anime, sort='score'):
         cluster_df = final_df[final_df['cluster']==cluster].sort_values(by='popularity')
     elif sort == 'neighbor':
         cluster = final_df[final_df['title_english']==fav_anime]['neighbor'].values[0]
-        cluster_df = final_df.iloc[final_df['neighbor'].iloc[cluster]]
+        cluster_df = final_df.iloc[final_df['neighbor'].iloc[cluster].values]
 
     return cluster_df

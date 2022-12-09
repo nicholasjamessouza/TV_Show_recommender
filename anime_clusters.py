@@ -204,10 +204,10 @@ def get_cluster(fav_anime, sort='Closest Match'):
         pop_df['cluster'] = y
         final_df = pop_df
 
-    top_anime = pd.read_csv(file,index_col=0)
-    top_anime['images_url'] = top_anime['images'].apply(lambda x: x.split("url': '")[1].split("'")[0])
-    img_url = top_anime[['mal_id','images_url']]
-    final_df = final_df.merge(img_url, on='mal_id').drop_duplicates(subset=['mal_id']).reset_index(drop=True)
+    # top_anime = pd.read_csv(file,index_col=0)
+    # top_anime['images_url'] = top_anime['images'].apply(lambda x: x.split("url': '")[1].split("'")[0])
+    # img_url = top_anime[['mal_id','images_url']]
+    # final_df = final_df.merge(img_url, on='mal_id').drop_duplicates(subset=['mal_id']).reset_index(drop=True)
     img_url = final_df[final_df['title_english']==fav_anime]['images_url'].values[0]
     if sort == 'Score':
         idx = final_df[final_df['title_english']==fav_anime].index

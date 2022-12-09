@@ -73,7 +73,6 @@ st.success(
 
 response = AgGrid(
     df,
-    width=10000,
     gridOptions=gridOptions,
     enable_enterprise_modules=True,
     update_mode=GridUpdateMode.MODEL_CHANGED,

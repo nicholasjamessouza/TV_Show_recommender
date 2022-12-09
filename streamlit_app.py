@@ -63,16 +63,13 @@ df['themes']=df['themes'].apply(lambda x: x.replace('[','').replace(']','').repl
 df['table_img']=df['images_url'].apply(lambda x: x.split('.jpg')[0]+'t.jpg')
 
 image_nation = JsCode("""function (params) {
-        console.log(params);
-        var element = document.createElement("span");
         var imageElement = document.createElement("img");
     
-        imageElement.src = params.data.image_path;
+        imageElement.src = params.value;
         imageElement.width="40";
         imageElement.height="57";
 
         element.appendChild(imageElement);
-        element.appendChild(document.createTextNode(params.value));
         return element;
         }""")
 

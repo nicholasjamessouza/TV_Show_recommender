@@ -72,10 +72,11 @@ st.success(
 
 response = AgGrid(
     df,
+    width=1000,
     gridOptions=gridOptions,
     enable_enterprise_modules=True,
     update_mode=GridUpdateMode.MODEL_CHANGED,
     data_return_mode=DataReturnMode.FILTERED_AND_SORTED,
-    fit_columns_on_grid_load=True,
+    fit_columns_on_grid_load=False,
     theme = 'dark'
 )

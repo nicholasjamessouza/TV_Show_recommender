@@ -97,6 +97,7 @@ response = AgGrid(
     update_mode=GridUpdateMode.MODEL_CHANGED,
     data_return_mode=DataReturnMode.FILTERED_AND_SORTED,
     fit_columns_on_grid_load=False,
+    fit_rows_on_grid_load=False,
     allow_unsafe_jscode = True,
     theme = 'dark'
 )

@@ -15,7 +15,7 @@ show_list = input_df['title_english'].to_list()
 show_list.insert(0,'')
 
 def _max_width_():
-    max_width_str = f"max-width: 1800px;"
+    max_width_str = f"max-width: 2400px;"
     st.markdown(
         f"""
     <style>

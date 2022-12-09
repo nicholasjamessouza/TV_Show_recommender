@@ -77,8 +77,8 @@ image_nation = JsCode("""function (params) {
 df[' '] = df['table_img']
 df['Title'] = df['grid_title']
 gb = GridOptionsBuilder.from_dataframe(df[[' ','Title','popularity','score','genres','themes']].reset_index(drop=True))
-gb.configure_column("grid_title",cellRenderer=JsCode('''function(params) {return params.value}'''))
-gb.configure_column("table_img",cellRenderer=image_nation)
+gb.configure_column("Title",cellRenderer=JsCode('''function(params) {return params.value}'''))
+gb.configure_column(" ",cellRenderer=image_nation)
 # enables pivoting on all columns, however i'd need to change ag grid to allow export of pivoted/grouped data, however it select/filters groups
 gb.configure_default_column(enablePivot=False, enableValue=False, enableRowGroup=False)
 gb.configure_selection(selection_mode="multiple", use_checkbox=False)

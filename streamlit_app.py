@@ -57,8 +57,6 @@ with c30:
 
 from st_aggrid import GridUpdateMode, DataReturnMode
 
-df['grid_title'] = df['title_english']+df['url']
-df['grid_title']=df['grid_title'].apply(lambda x: '<a href="http'+x.split('http')[1]+'" target="_blank">'+x.split('http')[0]+'</a>')[0]
 gb = GridOptionsBuilder.from_dataframe(df[['grid_title','popularity','score','genres','themes']].reset_index())
 # enables pivoting on all columns, however i'd need to change ag grid to allow export of pivoted/grouped data, however it select/filters groups
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)

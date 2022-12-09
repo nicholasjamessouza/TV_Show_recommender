@@ -57,6 +57,8 @@ with c30:
 
 from st_aggrid import GridUpdateMode, DataReturnMode
 
+st.table(df)
+
 gb = GridOptionsBuilder.from_dataframe(df)
 # enables pivoting on all columns, however i'd need to change ag grid to allow export of pivoted/grouped data, however it select/filters groups
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)

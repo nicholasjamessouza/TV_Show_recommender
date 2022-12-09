@@ -59,11 +59,11 @@ from st_aggrid import GridUpdateMode, DataReturnMode, JsCode
 
 
 
-gb = GridOptionsBuilder.from_dataframe(df[['grid_title','popularity','score','genres','themes']].reset_index(drop=True))
+gb = GridOptionsBuilder.from_dataframe(df[['url','popularity','score','genres','themes']].reset_index(drop=True))
 cell_renderer =  JsCode("""
-function(params) {return `${params.value}`}
+function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`}
 """)
-gb.configure_column("grid_title",cellRenderer=cell_renderer)
+gb.configure_column("url",cellRenderer=cell_renderer)
 # enables pivoting on all columns, however i'd need to change ag grid to allow export of pivoted/grouped data, however it select/filters groups
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
 gb.configure_selection(selection_mode="multiple", use_checkbox=True)

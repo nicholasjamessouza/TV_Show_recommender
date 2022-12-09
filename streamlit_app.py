@@ -62,8 +62,8 @@ gb = GridOptionsBuilder.from_dataframe(df[['title_english','popularity','score',
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
 gb.configure_selection(selection_mode="multiple", use_checkbox=True)
 gb.configure_side_bar()  # side_bar is clearly a typo :) should by sidebar
-gb.width(1000)
 gridOptions = gb.build()
+
 
 st.success(
     f"""
@@ -73,6 +73,7 @@ st.success(
 
 response = AgGrid(
     df,
+    width=10000,
     gridOptions=gridOptions,
     enable_enterprise_modules=True,
     update_mode=GridUpdateMode.MODEL_CHANGED,

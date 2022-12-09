@@ -36,7 +36,7 @@ st.image(
 
 st.title("Anime Match")
 
-c29, c30, c31 = st.columns([1, 10, 1])
+c29, c30, c31 = st.columns([1, 6, 1])
 
 with c30:
 

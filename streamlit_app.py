@@ -60,7 +60,7 @@ from st_aggrid import GridUpdateMode, DataReturnMode, JsCode
 
 df['genres']=df['genres'].apply(lambda x: x.replace('[','').replace(']','').replace("'",''))
 df['themes']=df['themes'].apply(lambda x: x.replace('[','').replace(']','').replace("'",''))
-df['table_img']=df['url'].apply(lambda x: x.split('.jpg')[1]+'t.jpg')
+df['table_img']=df['url'].apply(lambda x: x.split('.jpg')[0]+'t.jpg')
 
 image_nation = JsCode("""function (params) {
         console.log(params);

@@ -60,8 +60,25 @@ from st_aggrid import GridUpdateMode, DataReturnMode, JsCode
 
 df['genres']=df['genres'].apply(lambda x: x.replace('[','').replace(']','').replace("'",''))
 df['themes']=df['themes'].apply(lambda x: x.replace('[','').replace(']','').replace("'",''))
-gb = GridOptionsBuilder.from_dataframe(df[['grid_title','popularity','score','genres','themes']].reset_index(drop=True))
+df['table_img']=df['url'].apply(lambda x: x.split('.jpg')[1]+'t.jpg')
+
+image_nation = JsCode("""function (params) {
+        console.log(params);
+        var element = document.createElement("span");
+        var imageElement = document.createElement("img");
+    
+        imageElement.src = params.data.image_path;
+        imageElement.width="40";
+        imageElement.height="57";
+
+        element.appendChild(imageElement);
+        element.appendChild(document.createTextNode(params.value));
+        return element;
+        }""")
+
+gb = GridOptionsBuilder.from_dataframe(df[['table_img','grid_title','popularity','score','genres','themes']].reset_index(drop=True))
 gb.configure_column("grid_title",cellRenderer=JsCode('''function(params) {return params.value}'''))
+gb.configure_column("table_img",cellRenderer=image_nation)
 # enables pivoting on all columns, however i'd need to change ag grid to allow export of pivoted/grouped data, however it select/filters groups
 gb.configure_default_column(enablePivot=False, enableValue=False, enableRowGroup=False)
 gb.configure_selection(selection_mode="multiple", use_checkbox=False)

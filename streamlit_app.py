@@ -82,7 +82,8 @@ gb.configure_column(" ",cellRenderer=image_nation)
 # enables pivoting on all columns, however i'd need to change ag grid to allow export of pivoted/grouped data, however it select/filters groups
 gb.configure_default_column(enablePivot=False, enableValue=False, enableRowGroup=False)
 gb.configure_selection(selection_mode="multiple", use_checkbox=False)
-gb.configure_grid_options(rowHeight=60)
+cellStyle= {'height': '100%','display': 'flex ','justify-content': 'center','align-items': 'center'}
+gb.configure_grid_options(rowHeight=60,cellStyle=cellStyle)
 #gb.configure_side_bar()  # side_bar is clearly a typo :) should by sidebar
 gridOptions = gb.build()
 

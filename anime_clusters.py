@@ -22,7 +22,9 @@ file = './top_anime.csv'
 pd.options.mode.chained_assignment = None  # default='warn'
 
 def cell_splitter(temp_df):
+    # Splits JSON into array for each cell
     for i, values in enumerate(temp_df):
+        # Converts when loading from saved file
         if isinstance(values, str):
             values = yaml.load(values,Loader=yaml.Loader)
         value_list = []
@@ -34,25 +36,8 @@ def cell_splitter(temp_df):
 
     return temp_df
 
-def nlp(text, num_of_words=10):
-    text = text.values[0]
-    cv = CountVectorizer(stop_words='english')
-    dtm = cv.fit_transform([text])
-    # Build LDA Model with GridSearch params
-    lda_model = LatentDirichletAllocation(n_components=1,
-                                        learning_decay=0.5,
-                                        max_iter=50,
-                                        learning_method='online',
-                                        random_state=50,
-                                        batch_size=100,
-                                        evaluate_every = -1,
-                                        n_jobs = -1)
-    lda_output = lda_model.fit_transform(dtm)
-    for topic in lda_model.components_:
-        words = [cv.get_feature_names_out()[i] for i in topic.argsort()][-num_of_words:]
-    return words
-
 def wiki(title):
+    # Scans wikipedia for more plot information to grab key words
     try:
         title = title + ' TV Series'
         page = str(wikipedia.page(title).content)
@@ -82,6 +67,7 @@ def nlp(text, num_of_words=10):
     return words
 
 def anime_search(search,df):
+    # Checks if running from saved file or not
     if df.empty:
         results = jikan.search('anime', search)
         df = pd.DataFrame(results['data'])
@@ -103,6 +89,7 @@ def anime_search(search,df):
     return temp_df
 
 def top_anime(pages=80):
+    # Grabs the top 80 pages of information from jikan
     if pages==80 and os.path.exists(file):
         df = pd.read_csv(file,index_col=0)
     else:
@@ -204,7 +191,10 @@ def get_cluster(fav_anime, sort='Closest Match'):
         pop_df['cluster'] = y
         final_df = pop_df
 
+    # Getting thumbnail image for show
     img_url = final_df[final_df['title_english']==fav_anime]['images_url'].values[0]
+
+    # Different sort methods
     if sort == 'Score':
         idx = final_df[final_df['title_english']==fav_anime].index
         cluster = final_df[final_df['title_english']==fav_anime]['cluster'].values[0]

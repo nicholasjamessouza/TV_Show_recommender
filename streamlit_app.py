@@ -30,7 +30,7 @@ def _max_width_():
 st.set_page_config(page_icon="👺", page_title="Anime Match")
 
 st.image(
-    "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/120/apple/325/goblin_1f47a.png",
+    "https://emojis.wiki/thumbs/emojis/goblin.webp",
     width=100,
 )
 
@@ -79,12 +79,12 @@ df['Title'] = df['grid_title']
 gb = GridOptionsBuilder.from_dataframe(df[[' ','Title','popularity','score','genres','themes']].reset_index(drop=True))
 gb.configure_column("Title",cellRenderer=JsCode('''function(params) {return params.value}'''))
 gb.configure_column(" ",cellRenderer=image_nation)
+
 # enables pivoting on all columns, however i'd need to change ag grid to allow export of pivoted/grouped data, however it select/filters groups
 gb.configure_default_column(enablePivot=False, enableValue=False, enableRowGroup=False)
 gb.configure_selection(selection_mode="multiple", use_checkbox=False)
 cellStyle= {'height': '100%','display': 'flex ','justify-content': 'center','align-items': 'center'}
 gb.configure_grid_options(rowHeight=60,cellStyle=cellStyle)
-#gb.configure_side_bar()  # side_bar is clearly a typo :) should by sidebar
 gridOptions = gb.build()
 
 
